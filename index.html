@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            
+        }
+        
+        input {
+            margin: 5px 0;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        #assignmentsList {
+            margin-top: 20px;
+        }
+        
+        .assignment-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f9f9f9;
+            border-left: 3px solid #4CAF50;
+        }
+        
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            background-color: #e7f3ff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: green;">Grade Calculator </h1>
+    
+    <div class="input-section">
+        <h2>Add Assignment</h2>
+        <input type="text" id="assignmentName" placeholder="Assignment name (e.g., Midterm 1)">
+        <input type="number" id="pointsEarned" placeholder="Points earned">
+        <input type="number" id="pointsPossible" placeholder="Points possible">
+        <input type="number" id="weight" placeholder="Weight (%)">
+        <button onclick="addAssignment()">Add Assignment</button>
+    </div>
+    
+    <div id="assignmentsList">
+        <h2>Your Assignments</h2>
+        
+    </div>
+    
+    <div id="result">
+       
+    </div>
+
+    <script>
+       let assignments = [];
+
+function addAssignment() {
+    const name = document.getElementById('assignmentName').value;
+    const earned = parseFloat(document.getElementById('pointsEarned').value);
+    const possible = parseFloat(document.getElementById('pointsPossible').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    
+   
+    if (!name || isNaN(earned) || isNaN(possible) || isNaN(weight)) {
+        alert('Please fill in all fields correctly!');
+        return;
+    }
+    
+    const assignment = {
+        name: name,
+        earned: earned,
+        possible: possible,
+        weight: weight
+    };
+    
+    assignments.push(assignment);
+    displayAssignments();
+    calculateGrade();
+    clearInputs();
+}
+
+function displayAssignments() {
+    const listDiv = document.getElementById('assignmentsList');
+    listDiv.innerHTML = '<h2>Your Assignments</h2>';
+    
+    assignments.forEach(function(assignment, index) {  
+        const percentage = (assignment.earned / assignment.possible) * 100;
+        const contribution = (percentage * assignment.weight) / 100;
+        
+        const assignmentDiv = document.createElement('div');
+        assignmentDiv.className = 'assignment-item';
+        assignmentDiv.innerHTML = `
+            <strong>${assignment.name}</strong><br>
+            Score: ${assignment.earned}/${assignment.possible} (${percentage.toFixed(1)}%)<br>
+            Weight: ${assignment.weight}% of course<br>
+            <strong>Contributes: ${contribution.toFixed(2)}% to your final grade</strong><br>
+            <button onclick="deleteAssignment(${index})" style="margin-top: 10px; background-color: #f44336; padding: 5px 10px; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+        `;
+        listDiv.appendChild(assignmentDiv);
+    });
+}
+
+function calculateGrade() {
+    if (assignments.length === 0) {
+        document.getElementById('result').innerHTML = 'Current Grade: --';
+        return;
+    }
+    
+    let totalContribution = 0;
+    let totalWeight = 0;
+    
+    assignments.forEach(function(assignment) {
+        const percentage = (assignment.earned / assignment.possible) * 100;
+        const contribution = (percentage * assignment.weight) / 100;
+        
+        totalContribution += contribution;  
+        totalWeight += assignment.weight;
+    });
+     document.getElementById('result').innerHTML = `
+        <strong>Current Grade: ${totalContribution.toFixed(2)} / 100 points</strong><br>`
+
+}
+function deleteAssignment(index) {
+    
+    assignments.splice(index, 1);
+    displayAssignments();
+    calculateGrade();
+}
+
+function clearInputs() {
+    document.getElementById('assignmentName').value = '';
+    document.getElementById('pointsEarned').value = '';
+    document.getElementById('pointsPossible').value = '';
+    document.getElementById('weight').value = '';
+}
+    </script>
+</body>
+</html>
